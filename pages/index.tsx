@@ -5,6 +5,8 @@ import React from 'react'
 import BusButton from '../components/button'
 import styles from '../styles/Home.module.css'
 
+import useSound from 'use-sound'
+
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
 import Groups2Icon from '@mui/icons-material/Groups2';
 import Signal from '../components/signal'
@@ -39,8 +41,11 @@ const Home: NextPage = () => {
   const [tabValue, setTabValue] = React.useState(0);
   const [isOn, setIsOn] = React.useState(false);
 
+  const [play, _] = useSound('/ding-dong.mp3');
+
   const turnOn = () => {
     if (!isOn) {
+      play();
       setIsOn(true);
     }
   };
@@ -73,7 +78,7 @@ const Home: NextPage = () => {
         </AppBar>
 
         <TabPanel value={tabValue} index={0}>
-          <BusButton isOn={isOn} onClick={() => setIsOn(!isOn)} />
+          <BusButton isOn={isOn} onClick={turnOn} />
         </TabPanel>
 
         <TabPanel value={tabValue} index={1}>
