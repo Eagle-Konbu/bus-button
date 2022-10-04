@@ -1,9 +1,35 @@
-import { AppBar, Tab, Tabs, Toolbar, Typography } from '@mui/material'
+import { AppBar, Box, Tab, Tabs, Toolbar, Typography } from '@mui/material'
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import React from 'react'
 import BusButton from '../components/button'
 import styles from '../styles/Home.module.css'
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+const TabPanel = (props: TabPanelProps) => {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography>{children}</Typography>
+        </Box>
+      )}
+    </div>
+  );
+}
 
 const Home: NextPage = () => {
   const [tabValue, setTabValue] = React.useState(0);
@@ -23,13 +49,17 @@ const Home: NextPage = () => {
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
               次止まりますボタン
             </Typography>
-            <Tabs value={tabValue} onChange={(_, newValue) => setTabValue(newValue)}>
+            <Tabs value={tabValue} onChange={(_, newValue) => setTabValue(newValue)} textColor='inherit'>
               <Tab label="Audience" />
               <Tab label="Presenter" />
             </Tabs>
           </Toolbar>
         </AppBar>
-        <BusButton isOn={isOn} onClick={() => setIsOn(!isOn)} />
+        <TabPanel value={tabValue} index={0}>
+          <BusButton isOn={isOn} onClick={() => setIsOn(!isOn)} />
+        </TabPanel>
+        <TabPanel value={tabValue} index={1}>
+        </TabPanel>
       </main>
     </div>
   )
