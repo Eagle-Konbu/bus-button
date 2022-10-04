@@ -1,10 +1,14 @@
+import { AppBar, Tab, Tabs, Toolbar, Typography } from '@mui/material'
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import Image from 'next/image'
+import React from 'react'
 import BusButton from '../components/button'
 import styles from '../styles/Home.module.css'
 
 const Home: NextPage = () => {
+  const [tabValue, setTabValue] = React.useState(0);
+  const [isOn, setIsOn] = React.useState(false);
+
   return (
     <div className={styles.container}>
       <Head>
@@ -14,21 +18,19 @@ const Home: NextPage = () => {
       </Head>
 
       <main className={styles.main}>
-        <BusButton isOn={false} />
+        <AppBar>
+          <Toolbar>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              次止まりますボタン
+            </Typography>
+            <Tabs value={tabValue} onChange={(_, newValue) => setTabValue(newValue)}>
+              <Tab label="Audience" />
+              <Tab label="Presenter" />
+            </Tabs>
+          </Toolbar>
+        </AppBar>
+        <BusButton isOn={isOn} onClick={() => setIsOn(!isOn)} />
       </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
     </div>
   )
 }
