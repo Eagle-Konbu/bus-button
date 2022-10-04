@@ -5,6 +5,9 @@ import React from 'react'
 import BusButton from '../components/button'
 import styles from '../styles/Home.module.css'
 
+import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
+import Groups2Icon from '@mui/icons-material/Groups2';
+
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
@@ -50,8 +53,8 @@ const Home: NextPage = () => {
               次止まりますボタン
             </Typography>
             <Tabs value={tabValue} onChange={(_, newValue) => setTabValue(newValue)} textColor='inherit'>
-              <Tab label="Audience" />
-              <Tab label="Presenter" />
+              <Tab icon={<Groups2Icon />} label="Audience" />
+              <Tab icon={<EmojiPeopleIcon />} label="Presenter" />
             </Tabs>
           </Toolbar>
         </AppBar>
