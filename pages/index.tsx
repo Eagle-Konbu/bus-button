@@ -1,4 +1,4 @@
-import { AppBar, Box, Tab, Tabs, Toolbar, Typography } from '@mui/material'
+import { AppBar, Box, Button, Tab, Tabs, Toolbar, Typography } from '@mui/material'
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import React from 'react'
@@ -7,6 +7,7 @@ import styles from '../styles/Home.module.css'
 
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
 import Groups2Icon from '@mui/icons-material/Groups2';
+import Signal from '../components/signal'
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -38,6 +39,18 @@ const Home: NextPage = () => {
   const [tabValue, setTabValue] = React.useState(0);
   const [isOn, setIsOn] = React.useState(false);
 
+  const turnOn = () => {
+    if (!isOn) {
+      setIsOn(true);
+    }
+  };
+
+  const reset = () => {
+    if (isOn) {
+      setIsOn(false);
+    }
+  };
+
   return (
     <div className={styles.container}>
       <Head>
@@ -58,10 +71,14 @@ const Home: NextPage = () => {
             </Tabs>
           </Toolbar>
         </AppBar>
+
         <TabPanel value={tabValue} index={0}>
           <BusButton isOn={isOn} onClick={() => setIsOn(!isOn)} />
         </TabPanel>
+
         <TabPanel value={tabValue} index={1}>
+          <Signal isOn={isOn} />
+          <Button onClick={reset} variant="contained" size="large" disabled={!isOn}>Reset</Button>
         </TabPanel>
       </main>
     </div>
