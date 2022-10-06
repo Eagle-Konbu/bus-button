@@ -1,7 +1,7 @@
 import { AppBar, Box, Button, Tab, Tabs, Toolbar, Typography } from '@mui/material'
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import React from 'react'
+import React, { useEffect } from 'react'
 import BusButton from '../components/button'
 import styles from '../styles/Home.module.css'
 
@@ -10,6 +10,7 @@ import useSound from 'use-sound'
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
 import Groups2Icon from '@mui/icons-material/Groups2';
 import Signal from '../components/signal'
+import { io } from 'socket.io-client'
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -38,6 +39,7 @@ const TabPanel = (props: TabPanelProps) => {
 }
 
 const Home: NextPage = () => {
+  const [socket, _setSocket] = React.useState(() => io());
   const [tabValue, setTabValue] = React.useState(0);
   const [isOn, setIsOn] = React.useState(false);
 
@@ -50,11 +52,15 @@ const Home: NextPage = () => {
     }
   };
 
-  const reset = () => {
+  const turnOff = () => {
     if (isOn) {
       setIsOn(false);
     }
   };
+
+  useEffect(() => {
+    socket.on("update", (newIsOn: boolean) => newIsOn ? turnOn() : turnOff());
+  })
 
   return (
     <div className={styles.container}>
@@ -83,7 +89,7 @@ const Home: NextPage = () => {
 
         <TabPanel value={tabValue} index={1}>
           <Signal isOn={isOn} />
-          <Button onClick={reset} variant="contained" size="large" disabled={!isOn}>Reset</Button>
+          <Button onClick={turnOff} variant="contained" size="large" disabled={!isOn}>Reset</Button>
         </TabPanel>
       </main>
     </div>
