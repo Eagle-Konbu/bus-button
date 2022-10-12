@@ -49,21 +49,18 @@ const Home: NextPage = () => {
     const [play, _] = useSound('/ding-dong.mp3');
 
     const turnOn = (emit?: boolean) => {
-        if (!isOn) {
-            play();
-            setIsOn(true);
-            if (emit) {
-                socket.emit('update-ison', true);
-            }
+        play();
+        setIsOn(true);
+        if (emit) {
+            socket.emit('update-ison', true);
         }
+
     };
 
     const turnOff = (emit?: boolean) => {
-        if (isOn) {
-            setIsOn(false);
-            if (emit) {
-                socket.emit('update-ison', false);
-            }
+        setIsOn(false);
+        if (emit) {
+            socket.emit('update-ison', false);
         }
     };
 
