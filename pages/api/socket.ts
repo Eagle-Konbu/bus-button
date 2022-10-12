@@ -11,6 +11,11 @@ const SocetHandler = (req: any, res: any) => {
             socket.on("disconnect", () => {
                 console.log("Client disconnected");
             });
+
+            socket.on("update-ison", newIsOn => {
+                console.log("update-ison", newIsOn);
+                io.emit("update-ison", newIsOn);
+            })
         });
 
         res.socket.server.io = io;
