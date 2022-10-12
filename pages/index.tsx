@@ -1,4 +1,4 @@
-import { AppBar, Box, Button, Tab, Tabs, Toolbar, Typography } from '@mui/material'
+import { AppBar, Backdrop, Box, Button, CircularProgress, Tab, Tabs, Toolbar, Typography } from '@mui/material'
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import React, { useEffect } from 'react'
@@ -10,7 +10,8 @@ import useSound from 'use-sound'
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
 import Groups2Icon from '@mui/icons-material/Groups2';
 import Signal from '../components/signal'
-import { io } from 'socket.io-client'
+import { io, Socket } from 'socket.io-client'
+import { DefaultEventsMap } from 'socket.io/dist/typed-events'
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -38,29 +39,57 @@ const TabPanel = (props: TabPanelProps) => {
   );
 }
 
+let socket: Socket<DefaultEventsMap, DefaultEventsMap>;
+
 const Home: NextPage = () => {
-  const [socket, _setSocket] = React.useState(() => io());
+  const [backdropShow, setBackdropShow] = React.useState(true);
   const [tabValue, setTabValue] = React.useState(0);
   const [isOn, setIsOn] = React.useState(false);
 
   const [play, _] = useSound('/ding-dong.mp3');
 
-  const turnOn = () => {
+  const turnOn = (emit?: boolean) => {
     if (!isOn) {
       play();
       setIsOn(true);
+      if (emit) {
+        socket.emit('update-ison', true);
+      }
     }
   };
 
-  const turnOff = () => {
+  const turnOff = (emit?: boolean) => {
     if (isOn) {
       setIsOn(false);
+      if (emit) {
+        socket.emit('update-ison', false);
+      }
     }
   };
 
+  const socketInitializer = async () => {
+    await fetch('api/socket');
+    socket = io();
+
+    socket.on('connect', () => {
+      setBackdropShow(false);
+      console.log('connected');
+    });
+
+    socket.on('update-ison', (newIsOn: boolean) => {
+      if (newIsOn) {
+        turnOn();
+      } else {
+        turnOff();
+      }
+    });
+  }
+
   useEffect(() => {
-    socket.on("update", (newIsOn: boolean) => newIsOn ? turnOn() : turnOff());
-  })
+    (async () => {
+      await socketInitializer();
+    })();
+  }, []);
 
   return (
     <div className={styles.container}>
@@ -84,13 +113,20 @@ const Home: NextPage = () => {
         </AppBar>
 
         <TabPanel value={tabValue} index={0}>
-          <BusButton isOn={isOn} onClick={turnOn} />
+          <BusButton isOn={isOn} onClick={() => turnOn(true)} />
         </TabPanel>
 
         <TabPanel value={tabValue} index={1}>
           <Signal isOn={isOn} />
-          <Button onClick={turnOff} variant="contained" size="large" disabled={!isOn}>Reset</Button>
+          <Button onClick={() => turnOff(true)} variant="contained" size="large" disabled={!isOn}>Reset</Button>
         </TabPanel>
+
+        <Backdrop
+          sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+          open={backdropShow}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </main>
     </div>
   )
